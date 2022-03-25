@@ -12,4 +12,8 @@ const SIZES = {
   h2: 20,
 };
 
-export { COLORS, SIZES };
+const FONTS = {
+  h1_semiBold: { fontSize: SIZES.h1, fontFamily: "Montserrat" },
+  h2_semiBold: { fontSize: SIZES.h2, fontFamily: "Montserrat" },
+};
+export { COLORS, SIZES, FONTS };

@@ -12,61 +12,16 @@ import {
   ImageBackground,
 } from "react-native";
 import { Card } from "../Components";
-import { COLORS, SIZES } from "../constants";
+import { COLORS, FONTS, SIZES } from "../constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const backgroundImage = require("../../assets/planet.png");
-
-const style = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Platform.OS === "ios" ? 40 : StatusBar.currentHeight + 10,
-    backgroundColor: COLORS.primary,
-    opacity: 0.8,
-    padding: SIZES.padding,
-  },
-  textBoxWrapper: {
-    width: "100%",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: SIZES.padding,
-  },
-  textInput: {
-    borderRadius: SIZES.textBoxRadius,
-    backgroundColor: COLORS.secondary,
-    height: 48,
-    paddingLeft: 15,
-    width: "90%",
-    color: COLORS.primary,
-    marginRight: 15,
-  },
-  button: {
-    backgroundColor: COLORS.accent,
-    height: 48,
-    width: 48,
-    borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 4,
-  },
-  heading: {
-    color: COLORS.secondary,
-    marginBottom: 20,
-    fontSize: 20,
-  },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-  },
-});
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { backgroundImage, style } from "./homepage-style";
 
 export default function Homepage() {
   const [list, setList] = useState([]);
   const [value, setValue] = useState("");
+  const [show, setShow] = useState(false);
+  const [index, setIndex] = useState(0);
 
   const getData = async () => {
     try {
@@ -108,6 +63,7 @@ export default function Homepage() {
           {
             text,
             isSelected: false,
+            time: "Set Time",
           },
         ];
         saveData(newList);
@@ -118,22 +74,41 @@ export default function Homepage() {
       alert("Please Type in something!");
     }
   }
+  const onChange = (event, date) => {
+    let currentDate = new Date(date);
+    let time =
+      currentDate.getHours() +
+      ":" +
+      currentDate.getMinutes() +
+      ":" +
+      currentDate.getSeconds();
+    if (time !== "NaN:NaN:NaN") {
+      list[index].time = time;
+      removeData();
+      saveData(list);
+    }
+    setShow(false);
+  };
 
   function deleteItem(idx) {
-    Alert.alert("Are your sure?", "Are you sure you want to Undo this Task?", [
-      {
-        text: "Yes",
-        onPress: () => {
-          const data = list.filter((item, index) => index !== idx);
-          setList(data);
-          removeData();
-          saveData(data);
+    Alert.alert(
+      "Are your sure?",
+      "Are you sure you want to Remove this Task?",
+      [
+        {
+          text: "Yes",
+          onPress: () => {
+            const data = list.filter((item, index) => index !== idx);
+            setList(data);
+            removeData();
+            saveData(data);
+          },
         },
-      },
-      {
-        text: "Cancle",
-      },
-    ]);
+        {
+          text: "Cancle",
+        },
+      ]
+    );
   }
 
   function setIsSelected(index, value) {
@@ -146,8 +121,9 @@ export default function Homepage() {
       }
     }
     setList(data);
+    removeData();
+    saveData(data);
   }
-
   return (
     <ImageBackground source={backgroundImage} style={style.image}>
       <View style={style.container}>
@@ -161,12 +137,22 @@ export default function Homepage() {
               index={index}
               setIsSelected={setIsSelected}
               deleteItem={deleteItem}
+              setShow={setShow}
+              setIndex={setIndex}
             />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
 
         <View style={style.textBoxWrapper}>
+          {show && (
+            <DateTimePicker
+              mode={"time"}
+              value={new Date()}
+              onChange={onChange}
+            ></DateTimePicker>
+          )}
+
           <TextInput
             style={style.textInput}
             placeholder="Enter Task To Add"
@@ -175,7 +161,15 @@ export default function Homepage() {
             value={value}
           />
           <TouchableOpacity style={style.button} onPress={() => addText(value)}>
-            <Text style={{ fontSize: 44, color: COLORS.secondary }}>+</Text>
+            <Text
+              style={{
+                fontSize: 45,
+                color: COLORS.secondary,
+                fontFamily: FONTS.h1_semiBold.fontFamily,
+              }}
+            >
+              +
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import CheckBox from "@react-native-community/checkbox";
-import { SIZES, COLORS } from "../constants";
+import { SIZES, COLORS, FONTS } from "../constants";
 
 const styles = StyleSheet.create({
   view: {
@@ -23,12 +23,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.secondary,
     marginBottom: 20,
+    justifyContent: "space-between",
   },
   text: {
+    fontSize: 18,
+    fontFamily: FONTS.h1_semiBold.fontFamily,
     color: COLORS.primary,
+    width: "60%",
   },
   checkbox: {
     marginRight: 15,
+  },
+  setTime: {
+    backgroundColor: COLORS.accent,
+    height: 30,
+    width: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 0,
+    borderRadius: 5,
   },
 });
 
@@ -51,6 +64,17 @@ export default function Card(props) {
       >
         {props.data.text}
       </Text>
+      <TouchableOpacity
+        style={styles.setTime}
+        onPress={() => {
+          props.setIndex(props.index);
+          props.setShow(true);
+        }}
+      >
+        <Text style={{ fontFamily: FONTS.h1_semiBold.fontFamily }}>
+          {props.data.time}
+        </Text>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
